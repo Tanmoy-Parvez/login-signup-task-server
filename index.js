@@ -16,7 +16,14 @@ async function run() {
     try {
         await client.connect();
         const database = client.db("alpha-yard");
+        const productsCollection = database.collection("products");
         const usersCollection = database.collection("users");
+
+        // get all products from db
+        app.get('/products', async (req, res) => {
+            const products = await productsCollection.find({}).toArray();
+            res.json(products);
+        })
 
         // save a sign up user
         app.post('/saveUser', async (req, res) => {
