@@ -24,6 +24,35 @@ async function run() {
             const result = await usersCollection.insertOne(user);
             res.send(result);
         })
+
+        // get an admin
+        app.get('/saveUser/:email', async (req, res) => {
+            const email = req.params.email;
+            const result = await usersCollection.findOne({ email: email });
+            let isAdmin = false;
+            if (result?.role === 'admin') {
+                isAdmin = true;
+            }
+            res.json({ admin: isAdmin });
+        })
+
+        // add an admin
+        app.put('/makeAdmin/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = await usersCollection.findOne({ email: email });
+            if (query) {
+                const updatedDoc = {
+                    $set: {
+                        role: 'admin',
+                    }
+                }
+                const result = await usersCollection.updateOne(query, updatedDoc);
+                res.json(result);
+            }
+            else {
+                res.status(403).json({ message: 'You do not have permission to make admin' })
+            }
+        })
     }
 
     finally {
