@@ -98,10 +98,16 @@ async function run() {
         })
 
         //get orders from the db
+        app.get('/allOrders', async (req, res) => {
+            const orders = await ordersCollection.find().toArray();
+            res.json(orders);
+        })
+
+
+        //get orders from the db
         app.get('/myOrder/:email', async (req, res) => {
             const email = req.params.email;
             const orders = await ordersCollection.find({ email: email }).toArray();
-            console.log(orders);
             res.json(orders);
         })
 
@@ -112,6 +118,31 @@ async function run() {
             res.json(result);
         })
 
+
+        // update status
+
+        // find specific order to update
+        app.get("/allOrders/:id", async (req, res) => {
+            const id = req.params.id;
+            const result = await ordersCollection.findOne({ _id: ObjectId(id) });
+            res.send(result);
+        });
+        // status update
+        app.put("/allOrders/:id", async (req, res) => {
+            const id = req.params.id;
+            const updateStatus = req.body;
+            const filter = { _id: ObjectId(id) };
+            const updateDoc = {
+                $set: {
+                    status: updateStatus.status,
+                },
+            };
+            const result = await ordersCollection.updateOne(
+                filter,
+                updateDoc,
+            );
+            res.json(result);
+        });
 
         // load reviews data
         app.get('/reviews', async (req, res) => {
