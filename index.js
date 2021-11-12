@@ -9,7 +9,7 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-
+// connect to the database
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.wh888.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
@@ -21,7 +21,6 @@ async function run() {
         const usersCollection = database.collection("users");
         const ordersCollection = database.collection("orders");
         const reviewCollection = database.collection("reviews");
-
 
 
         // get all products from db
@@ -49,9 +48,6 @@ async function run() {
             const result = await productsCollection.deleteOne({ _id: ObjectId(id) });
             res.json(result);
         })
-
-
-
 
         // save a sign up user
         app.post('/saveUser', async (req, res) => {
@@ -90,7 +86,6 @@ async function run() {
         })
 
 
-
         //add orders to the db
         app.post('/order', async (req, res) => {
             const orders = await ordersCollection.insertOne(req.body);
@@ -117,7 +112,6 @@ async function run() {
             const result = await ordersCollection.deleteOne({ _id: ObjectId(id) });
             res.json(result);
         })
-
 
         // update status
 
