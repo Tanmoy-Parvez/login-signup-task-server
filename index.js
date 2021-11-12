@@ -1,5 +1,7 @@
 const express = require("express");
 const cors = require("cors");
+const { MongoClient } = require('mongodb');
+const ObjectId = require('mongodb').ObjectId;
 require('dotenv').config()
 const app = express();
 const port = process.env.PORT || 5000;
@@ -8,7 +10,6 @@ app.use(cors());
 app.use(express.json());
 
 
-const { MongoClient } = require('mongodb');
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.wh888.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
@@ -18,11 +19,26 @@ async function run() {
         const database = client.db("alpha-yard");
         const productsCollection = database.collection("products");
         const usersCollection = database.collection("users");
+        const reviewCollection = database.collection("reviews");
 
         // get all products from db
         app.get('/products', async (req, res) => {
             const products = await productsCollection.find({}).toArray();
             res.json(products);
+        })
+
+        //add new products to the db
+        app.post('/products', async (req, res) => {
+            const products = await productsCollection.insertOne(req.body);
+            console.log(products);
+            res.json(products);
+        })
+
+        //remove a product from db
+        app.delete('/removeProducts/:id', async (req, res) => {
+            const id = req.params.id;
+            const result = await productsCollection.deleteOne({ _id: ObjectId(id) });
+            res.json(result);
         })
 
         // save a sign up user
@@ -60,6 +76,13 @@ async function run() {
                 res.status(403).json({ message: 'You do not have permission to make admin' })
             }
         })
+
+        // load reviews data
+        app.get('/reviews', async (req, res) => {
+            const reviews = await reviewCollection.find({}).toArray();
+            res.json(reviews);
+        })
+
     }
 
     finally {
