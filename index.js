@@ -97,6 +97,20 @@ async function run() {
             res.json(orders);
         })
 
+        //get orders from the db
+        app.get('/myOrder/:email', async (req, res) => {
+            const email = req.params.email;
+            const orders = await ordersCollection.find({ email: email }).toArray();
+            console.log(orders);
+            res.json(orders);
+        })
+
+        //remove a order from db
+        app.delete('/removeOrder/:id', async (req, res) => {
+            const id = req.params.id;
+            const result = await ordersCollection.deleteOne({ _id: ObjectId(id) });
+            res.json(result);
+        })
 
 
         // load reviews data
