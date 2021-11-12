@@ -19,7 +19,10 @@ async function run() {
         const database = client.db("alpha-yard");
         const productsCollection = database.collection("products");
         const usersCollection = database.collection("users");
+        const ordersCollection = database.collection("orders");
         const reviewCollection = database.collection("reviews");
+
+
 
         // get all products from db
         app.get('/products', async (req, res) => {
@@ -31,14 +34,12 @@ async function run() {
         app.get('/products/:id', async (req, res) => {
             const id = req.params.id
             const product = await productsCollection.findOne({ _id: ObjectId(id) });
-            console.log(product);
             res.json(product);
         })
 
         //add new products to the db
         app.post('/products', async (req, res) => {
             const products = await productsCollection.insertOne(req.body);
-            console.log(products);
             res.json(products);
         })
 
@@ -48,6 +49,9 @@ async function run() {
             const result = await productsCollection.deleteOne({ _id: ObjectId(id) });
             res.json(result);
         })
+
+
+
 
         // save a sign up user
         app.post('/saveUser', async (req, res) => {
@@ -85,6 +89,16 @@ async function run() {
             }
         })
 
+
+
+        //add orders to the db
+        app.post('/order', async (req, res) => {
+            const orders = await ordersCollection.insertOne(req.body);
+            res.json(orders);
+        })
+
+
+
         // load reviews data
         app.get('/reviews', async (req, res) => {
             const reviews = await reviewCollection.find({}).toArray();
@@ -97,7 +111,6 @@ async function run() {
             const result = await reviewCollection.insertOne(review);
             res.send(result);
         })
-
 
     }
 
