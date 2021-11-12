@@ -27,6 +27,14 @@ async function run() {
             res.json(products);
         })
 
+        //get a single product
+        app.get('/products/:id', async (req, res) => {
+            const id = req.params.id
+            const product = await productsCollection.findOne({ _id: ObjectId(id) });
+            console.log(product);
+            res.json(product);
+        })
+
         //add new products to the db
         app.post('/products', async (req, res) => {
             const products = await productsCollection.insertOne(req.body);
@@ -82,6 +90,14 @@ async function run() {
             const reviews = await reviewCollection.find({}).toArray();
             res.json(reviews);
         })
+
+        // save reviews data
+        app.post('/reviews', async (req, res) => {
+            const review = req.body;
+            const result = await reviewCollection.insertOne(review);
+            res.send(result);
+        })
+
 
     }
 
